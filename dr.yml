@@ -1,19 +1,13 @@
-kind: DestinationRule
 apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
 metadata:
   name: nginx-dr
 spec:
   host: nginx-service
-  trafficPolicy:
-    LoadBalancer:
-      simple: ROUND_ROBIN
   subsets:
-    - name: V1
+    - name: A
       labels:
         version: A
-      trafficPolicy:
-      LoadBalancer:
-        simple: LEAST_CONN
-    - name: V2
+    - name: B
       labels:
         version: B

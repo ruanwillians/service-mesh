@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicex
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: servicex
+  template:
+    metadata:
+      labels:
+        app: servicex
+        version: "200"
+    spec:
+      containers:
+      - name: circuitbraker
+        image: ruanwill/circuitbraker:latest
+        ports:
+        - containerPort: 3000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicex-error
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: servicex
+  template:
+    metadata:
+      labels:
+        app: servicex
+        version: "504"
+    spec:
+      containers:
+      - name: circuitbraker-error
+        image: ruanwill/circuitbraker:latest
+        ports: 
+        - containerPort: 3000
+        env:
+        - name: SIMULATE_ERROR
+          value: "yes"
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicex-service
+spec:
+  type: ClusterIP
+  selector:
+    app: servicex
+  ports:
+  - port: 80
+    targetPort: 3000
+
+ 
